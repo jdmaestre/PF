@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.jdmaestre.uninorte.pf.SingUpActivity"
+    >
+
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/usernameField"
+        android:hint="@string/username_hint"
+        android:textColorHint="@android:color/darker_gray"
+        android:layout_marginTop="102dp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_below="@+id/subtitle"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:inputType="text"/>
+    <requestFocus/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/passwordField"
+        android:layout_below="@+id/usernameField"
+        android:layout_centerHorizontal="true"
+        android:hint="@string/password_hint"
+        android:textColorHint="@android:color/darker_gray"
+        android:textColor="@android:color/darker_gray"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/emailField"
+        android:layout_below="@+id/passwordField"
+        android:layout_centerHorizontal="true"
+        android:hint="@string/email_hint"
+        android:textColor="@android:color/darker_gray"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/singup_button"
+        android:id="@+id/singUpButton"
+        android:layout_below="@+id/emailField"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_standard" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/app_name"
+        android:id="@+id/title"
+        android:textSize="40sp"
+        android:textColor="@android:color/darker_gray"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_below="@+id/singUpButton"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text=""
+        android:id="@+id/subtitle"
+        android:layout_below="@+id/title"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
