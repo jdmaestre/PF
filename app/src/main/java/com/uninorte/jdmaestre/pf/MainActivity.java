@@ -1,7 +1,11 @@
 package com.uninorte.jdmaestre.pf;
 
+import java.util.Date;
 import java.util.Locale;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.*;
 import android.support.v7.app.ActionBarActivity;
@@ -15,11 +19,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
+import com.gimbal.android.BeaconEventListener;
+import com.gimbal.android.BeaconManager;
+import com.gimbal.android.BeaconSighting;
+import com.gimbal.android.Communication;
+import com.gimbal.android.CommunicationListener;
+import com.gimbal.android.CommunicationManager;
+import com.gimbal.android.Gimbal;
+import com.gimbal.android.PlaceEventListener;
+import com.gimbal.android.PlaceManager;
+import com.gimbal.android.Push;
+import com.gimbal.android.Visit;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
 import com.parse.ParseTwitterUtils;
 import com.parse.ParseUser;
+
+import java.util.Collection;
+import java.util.List;
+import android.util.Log;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
@@ -39,6 +66,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    private PlaceEventListener placeEventListener;
+    private CommunicationListener communicationListener;
+    private BeaconEventListener beaconSightingListener;
+    private BeaconManager beaconManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +126,132 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         }
 
+
+        Gimbal.registerForPush("6658256976374");
+
+        placeEventListener = new PlaceEventListener() {
+            @Override
+            public void onVisitStart(Visit visit) {
+                // This will be invoked when a place is entered. Example below shows a simple log upon enter
+                Log.i("Info:", "Enter: " + visit.getPlace().getName() + ", at: " + new Date(visit.getArrivalTimeInMillis()));
+                //Toast.makeText(getApplication(),"Comenzo la visita",Toast.LENGTH_LONG).show();
+
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("Sucursales");
+                query.whereEqualTo("Beacon",visit.getPlace().getName());
+                Toast.makeText(getApplication(),visit.getPlace().getName() , Toast.LENGTH_SHORT).show();
+
+                query.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> parseObjects, ParseException e) {
+                        if (e == null){
+                            for (int n=0; n<parseObjects.size();n++){
+                                ParseObject object = parseObjects.get(n);
+                                String promo = object.getString("PP");
+                                String nom = object.getString("Nombre");
+                                Toast.makeText(getApplication(),promo , Toast.LENGTH_SHORT).show();
+
+                                RemoteViews remoteViews = new RemoteViews(getPackageName(),
+                                        R.layout.widget);
+                                //TextView Titulo = (TextView)findViewById(R.id.widgetTitle);
+                                //Titulo.setText(nom);
+                                //TextView Descripcion = (TextView)findViewById(R.id.widgetDescripcion);
+                                //Titulo.setText(promo);
+
+                                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                                        getApplication()).setSmallIcon(R.drawable.ic_notification_name).setContentTitle(nom)
+                                        .setContentText(promo).setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+                                // Creates an explicit intent for an Activity in your app
+                                Intent resultIntent = new Intent(getApplication(), MainActivity.class);
+                                // The stack builder object will contain an artificial back stack for
+                                // the
+                                // started Activity.
+                                // This ensures that navigating backward from the Activity leads out of
+                                // your application to the Home screen.
+                                TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplication());
+                                // Adds the back stack for the Intent (but not the Intent itself)
+                                stackBuilder.addParentStack(MainActivity.class);
+                                // Adds the Intent that starts the Activity to the top of the stack
+                                stackBuilder.addNextIntent(resultIntent);
+                                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+                                        PendingIntent.FLAG_UPDATE_CURRENT);
+                                //remoteViews.setOnClickPendingIntent(R.id.button1, resultPendingIntent);
+                                NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                // mId allows you to update the notification later on.
+                                mNotificationManager.notify(100, mBuilder.build());
+
+                            }
+                        }
+                        else{
+
+                        }
+
+                    }
+
+                });
+
+
+            }
+
+            @Override
+            public void onVisitEnd(Visit visit) {
+                // This will be invoked when a place is exited. Example below shows a simple log upon exit
+                Log.i("Info:", "Exit: " + visit.getPlace().getName() + ", at: " + new Date(visit.getDepartureTimeInMillis()));
+                Toast.makeText(getApplication(),"Termino la visita",Toast.LENGTH_LONG).show();
+            }
+        };
+        PlaceManager.getInstance().addListener(placeEventListener);
+
+        communicationListener = new CommunicationListener() {
+            @Override
+            public Collection<Communication> presentNotificationForCommunications(Collection<Communication> communications, Visit visit) {
+                for (Communication comm : communications) {
+                    Log.i("INFO", "Place Communication: " + visit.getPlace().getName() + ", message: " + comm.getTitle());
+
+                }
+                //allow Gimbal to show the notification for all communications
+                return communications;
+            }
+
+
+
+            @Override
+            public Collection<Communication> presentNotificationForCommunications(Collection<Communication> communications, Push push) {
+                for (Communication comm : communications) {
+                    Log.i("INFO", "Received a Push Communication with message: " + comm.getTitle());
+                    Toast.makeText(getApplication(),"Push",Toast.LENGTH_LONG).show();
+                }
+                //allow Gimbal to show the notification for all communications
+                return communications;
+            }
+
+            @Override
+            public void onNotificationClicked(List<Communication> communications) {
+                Log.i("INFO", "Notification was clicked on");
+            }
+        };
+        CommunicationManager.getInstance().addListener(communicationListener);
+
+        beaconSightingListener = new BeaconEventListener() {
+            @Override
+            public void onBeaconSighting(BeaconSighting sighting) {
+                Log.i("INFO", sighting.toString());
+                //Toast.makeText(getApplication(),sighting.getBeacon().getName(),Toast.LENGTH_LONG).show();
+
+            }
+        };
+        beaconManager = new BeaconManager();
+        beaconManager.addListener(beaconSightingListener);
+
+
+        PlaceManager.getInstance().startMonitoring();
+        beaconManager.startListening();
+        CommunicationManager.getInstance().startReceivingCommunications();
+
+
+
+
+
+
     }
 
     private void navigateToLogin() {
@@ -123,6 +281,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             navigateToLogin();
         }
 
+        if (id == R.id.action_settings) {
+            if(PlaceManager.getInstance().isMonitoring() == true){
+
+                Toast.makeText(getApplication(),"Esta monitoreando",Toast.LENGTH_LONG).show();
+
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 

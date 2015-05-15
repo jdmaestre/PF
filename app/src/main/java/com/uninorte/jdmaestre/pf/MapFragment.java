@@ -18,6 +18,10 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 /**
  * Created by Jose on 17/04/2015.
@@ -29,6 +33,7 @@ public class MapFragment extends Fragment {
     protected String TAG = MainActivity.class.getSimpleName();
     protected static Context mContext;
     protected MarkerOptions myPosition;
+    LatLng a;
 
     LocationListener locationListener;
 
@@ -58,12 +63,16 @@ public class MapFragment extends Fragment {
         super.onResume();
         mMapView.onResume();
 
+
+
+
+
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         // Define a listener that responds to location updates
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                LatLng a = new LatLng(location.getLatitude(),location.getLongitude());
+                a = new LatLng(location.getLatitude(),location.getLongitude());
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(a)    // Sets the center of the map to Mountain View
@@ -73,6 +82,8 @@ public class MapFragment extends Fragment {
                         .build();                   // Creates a CameraPosition from the builder
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),2000,null);
                 googleMap.setMyLocationEnabled(true);
+
+
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -89,6 +100,8 @@ public class MapFragment extends Fragment {
 
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5 , locationListener);
+
+
 
 
 

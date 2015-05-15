@@ -22,4 +22,10 @@
     <string name="login_error_message">Asegurate de ingresar todos los datos</string>
     <string name="login_error_title">Oops!</string>
     <string name="menu_logout_label">Logout</string>
+    <string name="title_activity_local">LocalActivity</string>
+
+
+    <string name="title_section1_local">Promociones</string>
+    <string name="title_section2_local">Sucursales</string>
+
 </resources>
