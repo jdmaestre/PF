@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -17,6 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gimbal.android.BeaconManager;
+import com.gimbal.android.PlaceManager;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -33,6 +37,7 @@ public class ListFragment extends Fragment {
 
     boolean sw = false;
     LocationListener locationListener;
+    private BeaconManager beaconManager;
 
 
     ArrayList<DireccionSucursal> sucursales = new ArrayList<DireccionSucursal>();
@@ -49,18 +54,18 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager1 = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         // Define a listener that responds to location updates
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
 
-                LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                LocationManager locationManager1 = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                 String locationProvider = LocationManager.GPS_PROVIDER;
-                final Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+                final Location lastKnownLocation = locationManager1.getLastKnownLocation(locationProvider);
 
 
 
-                if(lastKnownLocation != null){
+                if(lastKnownLocation != null && isNetworkAvailable()){
 
                     ParseGeoPoint userLocation = new ParseGeoPoint(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Sucursales");
@@ -96,8 +101,8 @@ public class ListFragment extends Fragment {
                                     });
 
                                 }
-                                LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                                locationManager.removeUpdates(locationListener);
+                                LocationManager locationManager1 = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                                locationManager1.removeUpdates(locationListener);
 
 
                             }else{
@@ -124,7 +129,7 @@ public class ListFragment extends Fragment {
         String locationProvider = LocationManager.NETWORK_PROVIDER;
 
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5 , locationListener);
+        locationManager1.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5 , locationListener);
 
 
 
@@ -230,7 +235,21 @@ public class ListFragment extends Fragment {
             TextView tite;
             TextView direcccion;
         }
-    }}
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) getActivity().getSystemService(MainActivity.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        boolean isNetworkAvaible = false;
+        if (networkInfo != null && networkInfo.isConnected()) {
+            isNetworkAvaible = true;
+
+        } else {
+            Toast.makeText(getActivity(), "No hay red disponible ", Toast.LENGTH_LONG)
+                    .show();
+        }
+        return isNetworkAvaible;
+    }
+}
 
 
 
