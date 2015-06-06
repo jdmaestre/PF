@@ -1,28 +1,28 @@
 <resources>
-    <string name="app_name">PF</string>
+    <string name="app_name">OfertaYa!</string>
 
 
-    <string name="title_section1_main">Map</string>
-    <string name="title_section2_main">List</string>
+    <string name="title_section1_main">Mapa</string>
+    <string name="title_section2_main">Locales</string>
 
 
     <string name="hello_world">Hello world!</string>
 
     <string name="action_settings">Settings</string>
-    <string name="username_hint">Username</string>
-    <string name="password_hint">Password</string>
-    <string name="login_button_label">Login</string>
+    <string name="username_hint">Ususario</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="login_button_label">Iniciar Sesion</string>
     <string name="title_activity_login">Log-in</string>
     <string name="title_activity_sing_up">SignUp</string>
     <string name="email_hint">e-mail</string>
-    <string name="singup_label">Don\'t have an account? Sign up!</string>
-    <string name="singup_button">Sing up!</string>
+    <string name="singup_label">No tienes una cuenta? Registrate!</string>
+    <string name="singup_button">Registrarse!</string>
     <string name="singup_error_message">Asegurate de ingresar todos los datos</string>
     <string name="singup_error_title">Oops!</string>
     <string name="login_error_message">Asegurate de ingresar todos los datos</string>
     <string name="login_error_title">Oops!</string>
     <string name="menu_logout_label">Logout</string>
-    <string name="title_activity_local">LocalActivity</string>
+    <string name="title_activity_local">OfertaYa!</string>
 
 
     <string name="title_section1_local">Promociones</string>

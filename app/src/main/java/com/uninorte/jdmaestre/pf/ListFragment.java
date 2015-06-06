@@ -3,6 +3,7 @@ package com.uninorte.jdmaestre.pf;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -10,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +23,14 @@ import android.widget.Toast;
 
 import com.gimbal.android.BeaconManager;
 import com.gimbal.android.PlaceManager;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +58,57 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
+        SharedPreferences locationP = getActivity().getSharedPreferences("location", 0);
+        Double lat = Double.longBitsToDouble(locationP.getLong("latitud",0));
+        Double lon = Double.longBitsToDouble(locationP.getLong("longitud",0));
+
+        ParseGeoPoint userLocation = new ParseGeoPoint(lat, lon);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Sucursales");
+        query.whereNear("Ubicacion", userLocation);
+        query.setLimit(10);
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if(e == null){
+
+                    for(int n=0;n<parseObjects.size();n++){
+                        ParseObject object = parseObjects.get(n);
+                        String Nombre = object.getString("Nombre");
+                        String Direccion = object.getString("Direccion");
+                        String id = object.getString("idEmpresa");
+                        sucursales.add(new DireccionSucursal(Nombre, Direccion, id));
+
+                        ListView list = (ListView)getView().findViewById(R.id.sucursalesListView);
+
+                        final DireccionSucursalAdapter adapter = new DireccionSucursalAdapter(getActivity(), sucursales);
+                        list.setAdapter(adapter);
+
+                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Intent intent = new Intent(getActivity(), LocalActivity.class);
+                                intent.putExtra("id", sucursales.get(position).id);
+                                startActivity(intent);
+
+                            }
+                        });
+
+                    }
+
+
+
+                }else{
+
+
+                }
+            }
+
+        });
+
+
+
+
         LocationManager locationManager1 = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         // Define a listener that responds to location updates
         locationListener = new LocationListener() {
@@ -73,6 +128,7 @@ public class ListFragment extends Fragment {
                     query.setLimit(10);
 
 
+                    sucursales.clear();
                     query.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> parseObjects, ParseException e) {
@@ -88,6 +144,8 @@ public class ListFragment extends Fragment {
                                     ListView list = (ListView)getView().findViewById(R.id.sucursalesListView);
 
                                     final DireccionSucursalAdapter adapter = new DireccionSucursalAdapter(getActivity(), sucursales);
+
+
                                     list.setAdapter(adapter);
 
                                     list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -106,6 +164,7 @@ public class ListFragment extends Fragment {
 
 
                             }else{
+
 
                             }
                         }
@@ -249,6 +308,30 @@ public class ListFragment extends Fragment {
         }
         return isNetworkAvaible;
     }
+
+    public double CalculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius=6371;//radius of earth in Km
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLon = Math.toRadians(lon2-lon1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult= Radius*c;
+        double km=valueResult/1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec =  Integer.valueOf(newFormat.format(km));
+        double meter=valueResult%1000;
+        int  meterInDec= Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec + " Meter   " + meterInDec);
+
+        return Radius * c;
+    }
+
 }
 
 

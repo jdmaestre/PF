@@ -46,8 +46,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/singup_label"
+        android:textSize="20sp"
         android:id="@+id/singUpText"
         android:textColor="@android:color/darker_gray"
         android:layout_below="@+id/twiterLoginButton"
@@ -88,7 +88,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login with Twitter"
+        android:text="Iniciar sesion con twitter"
         android:id="@+id/twiterLoginButton"
         android:layout_below="@+id/loginButton"
         android:layout_centerHorizontal="true"

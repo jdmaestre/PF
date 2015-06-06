@@ -65,12 +65,12 @@ public class PFApplication extends Application {
             public void onVisitStart(Visit visit) {
                 // This will be invoked when a place is entered. Example below shows a simple log upon enter
                 Log.i("Info:", "Enter: " + visit.getPlace().getName() + ", at: " + new Date(visit.getArrivalTimeInMillis()));
-                Toast.makeText(getApplicationContext(), "Comenzo la visita", Toast.LENGTH_LONG).show();
+               // Toast.makeText(getApplicationContext(), "Comenzo la visita", Toast.LENGTH_LONG).show();
 
                 if(isNetworkAvailable()){
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Sucursales");
                     query.whereEqualTo("Beacon",visit.getPlace().getName());
-                    Toast.makeText(getApplicationContext(),visit.getPlace().getName() , Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(getApplicationContext(),visit.getPlace().getName() , Toast.LENGTH_SHORT).show();
 
                     query.findInBackground(new FindCallback<ParseObject>() {
                         @Override
@@ -130,7 +130,7 @@ public class PFApplication extends Application {
             public void onVisitEnd(Visit visit) {
                 // This will be invoked when a place is exited. Example below shows a simple log upon exit
                 Log.i("Info:", "Exit: " + visit.getPlace().getName() + ", at: " + new Date(visit.getDepartureTimeInMillis()));
-                Toast.makeText(getApplicationContext(),"Termino la visita",Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(),"Termino la visita",Toast.LENGTH_LONG).show();
             }
         };
         PlaceManager.getInstance().addListener(placeEventListener);

@@ -1,11 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@android:color/black</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
-        <item name="colorAccent">@android:color/holo_red_light</item>
+        <item name="colorPrimary">#d32f2f</item>
+        <item name="colorPrimaryDark">#b71c1c</item>
+        <item name="colorAccent">@android:color/black</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
     </style>
 
     <style name="MyActionBar"
